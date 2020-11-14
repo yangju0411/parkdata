@@ -27,7 +27,9 @@ class readData:
         statisticsmenu = Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Statistics", menu = statisticsmenu)
         statisticsmenu.add_command(label="Descriptive Statistics", command = self.descript)
-        statisticsmenu.add_command(label="T-test", command = self.ttest)
+        statisticsmenu.add_command(label="One Sample T-test", command = self.one_ttest)
+        statisticsmenu.add_command(label="Independent T-test", command = self.in_ttest)
+        statisticsmenu.add_command(label="Paired T-test", command = self.pair_ttest)
         statisticsmenu.add_command(label="Linear Regression", command = self.lr)
         statisticsmenu.add_command(label="Principal Component Analysis", command = self.pca)
         
@@ -55,7 +57,23 @@ class readData:
         print_bt.pack(side = BOTTOM)
         var_list.pack()  
 
-    def ttest(self):
+    def one_ttest(self):
+        variables = self.df.columns
+        one_ttest_menu = Toblevel()
+        one_ttest_menu.title("단일표본 t검정")
+        one_ttest_menu.geometry("500x250")
+        
+        var_list = Listbox(one_ttest_menu, selectmode = "single")
+        
+        for i in variables:
+            var_list.insert(END, i)
+            
+        mu = Entry(one_ttest_menu)
+        
+        pass
+    def pair_ttest(self):
+        pass
+    def in_ttest(self):
         pass
     def lr(self):
         pass
