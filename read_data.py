@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-
 from tkinter import * 
 from tkinter import filedialog
 
@@ -27,10 +25,13 @@ class readData:
         statisticsmenu = Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Statistics", menu = statisticsmenu)
         statisticsmenu.add_command(label="Descriptive Statistics", command = self.descript)
+        statisticsmenu.add_separator() 
         statisticsmenu.add_command(label="One Sample T-test", command = self.one_ttest)
         statisticsmenu.add_command(label="Independent T-test", command = self.in_ttest)
         statisticsmenu.add_command(label="Paired T-test", command = self.pair_ttest)
+        statisticsmenu.add_separator() 
         statisticsmenu.add_command(label="Correlation Matrix", command = self.corr)
+        statisticsmenu.add_separator() 
         statisticsmenu.add_command(label="Linear Regression", command = self.lr)
         
         open_csv.config(menu=menubar)
