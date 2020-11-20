@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 
 from tkinter import * 
 from tkinter import filedialog
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
+
 
 import read_data
 
@@ -15,7 +14,7 @@ class Main:
         self.root.geometry('1920x1080')
         self.t1 = Text(self.root, width = 1920, height = 1080)
         self.t1.pack(side = LEFT)
-        
+        self.root.title("박데이터")
                 
         menubar = Menu(self.root)                                # 윈도우에 메뉴바 추가
         filemenu = Menu(menubar, tearoff=0)                 # 상위 메뉴 탭 항목 추가

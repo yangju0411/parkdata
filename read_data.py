@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 
 from tkinter import * 
 from tkinter import filedialog
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
 
 import p_stats
 
@@ -32,8 +30,8 @@ class readData:
         statisticsmenu.add_command(label="One Sample T-test", command = self.one_ttest)
         statisticsmenu.add_command(label="Independent T-test", command = self.in_ttest)
         statisticsmenu.add_command(label="Paired T-test", command = self.pair_ttest)
+        statisticsmenu.add_command(label="Correlation Matrix", command = self.corr)
         statisticsmenu.add_command(label="Linear Regression", command = self.lr)
-        statisticsmenu.add_command(label="Principal Component Analysis", command = self.pca)
         
         open_csv.config(menu=menubar)
         
@@ -46,7 +44,7 @@ class readData:
         variables = self.df.columns
         descript_menu = Toplevel()
         descript_menu.title("기술 통계량 출력")
-        descript_menu.geometry("500x250")
+        descript_menu.geometry("300x250")
         
         var_list = Listbox(descript_menu, selectmode = "multiple")
         
@@ -73,7 +71,7 @@ class readData:
         variables = self.df.columns
         one_ttest_menu = Toplevel()
         one_ttest_menu.title("단일표본 t검정")
-        one_ttest_menu.geometry("500x250")
+        one_ttest_menu.geometry("300x250")
         
         var_list = Listbox(one_ttest_menu, selectmode = "single")
         
@@ -108,7 +106,7 @@ class readData:
         variables = self.df.columns
         pair_ttest_menu = Toplevel()
         pair_ttest_menu.title("대응표본 t검정")
-        pair_ttest_menu.geometry("500x250")
+        pair_ttest_menu.geometry("300x250")
         
         before_Label = Label(pair_ttest_menu, text = "변수 1")
         after_Label = Label(pair_ttest_menu, text = "변수 2")
@@ -140,13 +138,16 @@ class readData:
             value = float(value_Entry.get())
             tt = p_stats.Inde_Ttest(x = self.df.iloc[:, var_index], group = self.df.iloc[:, group_index], value = value)
             with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+                self.main.report("등분산 검정 결과")
+                self.main.report(tt.eqvar())
+                self.main.report("독립 t 검정 결과")
                 self.main.report(tt.result())
 
                 
         variables = self.df.columns
         in_ttest_menu = Toplevel()
         in_ttest_menu.title("독립표본 t검정")
-        in_ttest_menu.geometry("500x250")
+        in_ttest_menu.geometry("300x250")
         
         before_Label = Label(in_ttest_menu, text = "변수")
         after_Label = Label(in_ttest_menu, text = "그룹 변수")
@@ -171,7 +172,65 @@ class readData:
         value_Entry.grid(row = 2, column = 1)
         print_bt.grid(row = 3, column = 1)
         
+    def corr(self):
+        def corr_ok():
+            vars = list(var_list.curselection()) # curselection은 튜플 반환하므로 리스트로 변경
+            corr = p_stats.Corr(self.df.iloc[:,vars])
+            with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+                self.main.report(corr.result())
+            
+        variables = self.df.columns
+        corr_menu = Toplevel()
+        corr_menu.title("상관계수 출력")
+        corr_menu.geometry("300x250")
+        
+        var_list = Listbox(corr_menu, selectmode = "multiple")
+        
+        
+        for i in variables:
+            var_list.insert(END, i)
+        
+        print_bt = Button(corr_menu, text = "확인", command = corr_ok)
+        
+        print_bt.pack(side = BOTTOM)
+        var_list.pack()
+        
     def lr(self):
-        pass
-    def pca(self):
-        pass
+        def ttest():
+            x_indices = list(x_LB.curselection())
+            y_index = int(y_LB.curselection()[0])
+            print(x_indices)
+            if len(x_indices) == 1:
+                lr = p_stats.SLR(self.df.iloc[:, x_indices[0]], self.df.iloc[:, y_index])
+            else:
+                lr = p_stats.MLR(self.df.iloc[:, x_indices], self.df.iloc[:, y_index])
+            with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+                self.main.report("ANOVA Table")
+                self.main.report(lr.anova())
+                self.main.report("선형회귀분석 결과")
+                self.main.report(lr.result())
+
+                
+        variables = self.df.columns
+        lr_menu = Toplevel()
+        lr_menu.title("선형회귀분석")
+        lr_menu.geometry("300x250")
+        
+        x_Label = Label(lr_menu, text = "독립 변수")
+        y_Label = Label(lr_menu, text = "종속 변수")
+        x_LB = Listbox(lr_menu, selectmode = "multiple", exportselection=0)
+        y_LB = Listbox(lr_menu, selectmode = "single", exportselection=0)
+        
+        for i in variables:
+            x_LB.insert(END, i)
+            y_LB.insert(END, i)
+        
+        print_bt = Button(lr_menu, text = "확인", command = ttest)
+        
+        
+        x_Label.grid(row = 0, column = 0)
+        y_Label.grid(row = 0, column = 1)
+        x_LB.grid(row = 1, column = 0)
+        y_LB.grid(row = 1, column = 1)
+        print_bt.grid(row = 2, column = 1)
+
